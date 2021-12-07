@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
       })
       .subscribe(
         (response) => {
-          this.authService.setLocalStorage(response);
+          this.authService.setLocalStorage();
         },
         (error) => {
           console.log(error);

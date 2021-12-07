@@ -5,7 +5,7 @@ import * as moment from 'moment';
 export class AuthService {
   constructor() {}
 
-  setLocalStorage(responseObj) {}
+  setLocalStorage() {}
 
   logout() {}
 
