@@ -5,13 +5,30 @@ import * as moment from 'moment';
 export class AuthService {
   constructor() {}
 
-  setLocalStorage() {}
+  setLocalStorage(responseObj: any) {
+    const expires = moment().add(responseObj.expiresIn);
 
-  logout() {}
+    localStorage.setItem('token', responseObj.token);
+    localStorage.setItem('expires', JSON.stringify(expires.valueOf()));
+  }
 
-  isLoggedIn() {}
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expires');
+  }
 
-  isLoggedOut() {}
+  isLoggedIn() {
+    return moment().isBefore(this.getExpiration());
+  }
 
-  getExpiration() {}
+  isLoggedOut() {
+    return !this.isLoggedIn();
+  }
+
+  getExpiration() {
+    const expiration = localStorage.getItem('expires') || '';
+    const expiresAt = JSON.parse(expiration);
+
+    return moment(expiresAt);
+  }
 }
