@@ -1,16 +1,14 @@
 const mongoose = require('mongoose');
 const router = require('express').Router();
 const User = mongoose.model('User');
-const passport = require('passport');
 const utils = require('../lib/utils');
 
-router.get(
-  '/protected',
-  passport.authenticate('jwt', { session: false }),
-  (req, res, next) => {
-    res.status(200).json({ success: true, msg: 'You are authorized!' });
-  },
-);
+router.get('/protected', utils.authMiddleware, (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    msg: 'You are successfully authenticated to this route!',
+  });
+});
 
 router.post('/login', (req, res, next) => {
   User.findOne({ username: req.body.username })
@@ -52,16 +50,13 @@ router.post('/register', (req, res, next) => {
 
   const newUser = new User({ username: req.body.username, salt, hash });
 
-  newUser
-    .save()
-    .then((user) => {
-      const { token, expires } = utils.issueJWT(user);
-
-      res.json({ success: true, user, token, expiresIn: expires });
-    })
-    .catch((err) => {
-      next(err);
+  try {
+    newUser.save().then((user) => {
+      res.json({ success: true, user });
     });
+  } catch (error) {
+    res.json({ success: false, error: error });
+  }
 });
 
 module.exports = router;
